@@ -1,4 +1,4 @@
-# 🌙 MiBarrio Local
+# 🌙 Consume Local Conectando al Barrio
 **Conectando el Barrio con Tecnología e Inteligencia Artificial**
 
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
@@ -11,11 +11,11 @@
 
 ## 🚀 Descripción del Proyecto
 
-**MiBarrio Local** es un aparador digital interactivo desarrollado para el *Hackathon Durango 2026*, con el objetivo de democratizar el acceso a la tecnología para las micro y pequeñas empresas. En un mundo donde los mapas convencionales a menudo ignoran a los negocios tradicionales, esta plataforma conecta a ciudadanos y turistas con la verdadera esencia de la ciudad: sus tienditas, artesanos, mezcalerías y puestos de antojitos.
+**Consume Local Conectando al Barrio** es un aparador digital interactivo desarrollado para el *Hackathon Durango 2026*, con el objetivo de democratizar el acceso a la tecnología para las micro y pequeñas empresas. En un mundo donde los mapas convencionales a menudo ignoran a los negocios tradicionales, esta plataforma conecta a ciudadanos y turistas con la verdadera esencia de la ciudad: sus tienditas, artesanos, mezcalerías y puestos de antojitos.
 
 ### ✨ La Innovación: Registro "Ultra Fácil" con IA
 
-El gran diferenciador de **MiBarrio Local** es su proceso de *onboarding*. Sabiendo que muchos comerciantes no están familiarizados con la tecnología, eliminamos los formularios complejos. Utilizando la API de **Google Build AI**, los dueños de negocios solo necesitan enviar una nota de voz o un mensaje de chat contando qué venden y dónde están (ej. *"Hola, soy Juan, tengo una tiendita en calle Libertad que abre a las 8"*). 
+El gran diferenciador de **Consume Local Conectando al Barrio** es su proceso de *onboarding*. Sabiendo que muchos comerciantes no están familiarizados con la tecnología, eliminamos los formularios complejos. Utilizando la API de **Google Build AI**, los dueños de negocios solo necesitan enviar una nota de voz o un mensaje de chat contando qué venden y dónde están (ej. *"Hola, soy Juan, tengo una tiendita en calle Libertad que abre a las 8"*). 
 
 La inteligencia artificial hace el trabajo pesado: extrae la información, la estructura en formato JSON y da de alta el negocio en el mapa interactivo en menos de 2 minutos.
 
