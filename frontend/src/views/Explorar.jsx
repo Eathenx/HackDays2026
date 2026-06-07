@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, MapPin, Phone, Clock, Navigation, Star, Sparkles, Search, Store } from 'lucide-react';
-import { APIProvider, Map, Marker, InfoWindow, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import { ArrowLeft, MapPin, Phone, Clock, Navigation, Star, Search, Store } from 'lucide-react';
+import { APIProvider, Map, Marker, InfoWindow } from '@vis.gl/react-google-maps';
 import { getBusinesses } from '../services/businessService';
 
 const CATEGORIES = [
@@ -22,7 +22,6 @@ export default function Explorar({ onBack }) {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [googlePlaces, setGooglePlaces] = useState([]);
 
   const [tempApiKey, setTempApiKey] = useState(() => {
     return sessionStorage.getItem('temp_google_maps_api_key') || '';
@@ -56,7 +55,7 @@ export default function Explorar({ onBack }) {
   };
 
   // Filtrar por categoría y búsqueda
-  const dbFiltered = businesses.filter(b => {
+  const filteredBusinesses = businesses.filter(b => {
     const matchesCat = selectedCategory === 'Todos' || 
       getCategoriaName(b.categoria_id).toLowerCase().includes(selectedCategory.toLowerCase()) ||
       b.tags?.some(tag => tag.toLowerCase().includes(selectedCategory.toLowerCase()));
@@ -67,17 +66,6 @@ export default function Explorar({ onBack }) {
 
     return matchesCat && matchesSearch;
   });
-
-  // Combinar los de la DB con los de Google Places (sin duplicar nombres) y aplicar búsqueda
-  const filteredBusinesses = [
-    ...dbFiltered,
-    ...googlePlaces.filter(gp => {
-      const isDuplicate = businesses.some(db => db.nombre_negocio.toLowerCase() === gp.nombre_negocio.toLowerCase());
-      const matchesCat = selectedCategory === 'Todos' || getCategoriaName(gp.categoria_id).toLowerCase().includes(selectedCategory.toLowerCase());
-      const matchesSearch = gp.nombre_negocio.toLowerCase().includes(searchQuery.toLowerCase()) || gp.direccion.toLowerCase().includes(searchQuery.toLowerCase());
-      return !isDuplicate && matchesCat && matchesSearch;
-    })
-  ];
 
   const handleMarkerClick = (business) => {
     setSelectedBusiness(business);
@@ -145,14 +133,13 @@ export default function Explorar({ onBack }) {
         {/* Map Area */}
         <div className="flex-1 relative bg-gray-100 h-full">
           {activeApiKey ? (
-            <APIProvider apiKey={activeApiKey} libraries={['places']}>
+            <APIProvider apiKey={activeApiKey}>
               <Map
                 defaultZoom={selectedBusiness ? 16 : 14}
                 defaultCenter={selectedBusiness ? { lat: selectedBusiness.latitud, lng: selectedBusiness.longitud } : durangoCenter}
                 gestureHandling={'greedy'}
                 disableDefaultUI={false}
               >
-                <GooglePlacesFetcher onPlacesFound={setGooglePlaces} />
                 {filteredBusinesses.map((business) => (
                   <Marker
                     key={business.id}
@@ -436,60 +423,4 @@ function InfoRow({ icon, label, value }) {
       </div>
     </div>
   );
-}
-
-function GooglePlacesFetcher({ onPlacesFound }) {
-  const map = useMap();
-  const placesLibrary = useMapsLibrary('places');
-
-  useEffect(() => {
-    if (!map || !placesLibrary) return;
-
-    const service = new placesLibrary.PlacesService(map);
-
-    const searchPlaces = () => {
-      const request = {
-        location: map.getCenter(),
-        radius: 1000, // 1km radius
-        type: ['store', 'restaurant', 'food', 'grocery_or_supermarket', 'liquor_store']
-      };
-
-      service.nearbySearch(request, (results, status) => {
-        if (status === placesLibrary.PlacesServiceStatus.OK && results) {
-          const formatted = results.map(place => {
-            // Asignar una categoría genérica visual basada en los tags de Google
-            let catId = 14; // Abarrotes por defecto
-            if (place.types?.includes('restaurant') || place.types?.includes('food')) catId = 11; // Antojitos
-            if (place.types?.includes('liquor_store') || place.types?.includes('bar')) catId = 12; // Mezcal/Bebidas
-
-            return {
-              id: `google-${place.place_id}`,
-              nombre_negocio: place.name,
-              categoria_id: catId,
-              direccion: place.vicinity || 'Dirección en Google Maps',
-              latitud: place.geometry.location.lat(),
-              longitud: place.geometry.location.lng(),
-              rating: place.rating || 0,
-              horario: 'Sujeto a Google Maps',
-              tags: place.types || [],
-              isGooglePlace: true
-            };
-          });
-          onPlacesFound(formatted);
-        }
-      });
-    };
-
-    // Buscar cuando el mapa se mueva
-    const listener = map.addListener('idle', searchPlaces);
-    
-    // Búsqueda inicial
-    searchPlaces();
-
-    return () => {
-      google.maps.event.removeListener(listener);
-    };
-  }, [map, placesLibrary, onPlacesFound]);
-
-  return null;
 }
